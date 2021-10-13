@@ -14,7 +14,6 @@ class Main(object):
         self.video = 'video.mp4'
         self.template_image_file = 'template.png'
         self.template = cv2.imread(self.template_image_file)
-        self.template_width, self.template_height = self.template.shape[::1]
 
         cam = cv2.VideoCapture(self.video)
         
@@ -53,7 +52,7 @@ class Main(object):
         loc = np.where(result >= threshold)
 
         for pt in zip(*loc[::1]):
-            print(f'Found one in {pt}')
+            print(f'Found one in frame {current_frame} - {pt}')
 
 if __name__ == '__main__':
     Main()
