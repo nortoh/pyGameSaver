@@ -17,8 +17,11 @@ class Main(object):
         self.template_width, self.template_height = self.template.shape[::1]
 
         cam = cv2.VideoCapture(self.video)
+        
+        # Stick to a small section of frames for debugging
         current_frame = 0
         max_frame = 10
+
         while(current_frame < max_frame):
             ret, image = cam.read()
 
