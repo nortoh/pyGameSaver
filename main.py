@@ -21,6 +21,10 @@ class Main(object):
         # FPS and frames
         fps = cam.get(cv2.CAP_PROP_FPS)
         frame_count = int(cam.get(cv2.CAP_PROP_FRAME_COUNT))
+        # duration
+        duration = frame_count / fps
+        duration_minutes = int(duration / 60)
+        duration_seconds = duration % 60
         print(f'FPS: {fps} frame_count: {frame_count}')
         
         # Stick to a small section of frames for debugging
@@ -37,10 +41,16 @@ class Main(object):
                 self.check_frame(current_frame, image)
                 
                 if (current_frame % 100 == 1):
+                    # duration
+                    finished_time = current_frame / fps
+                    finished_minutes = int(finished_time / 60)
+                    finished_seconds = finished_time % 60
+
+                    # timer
                     end_time = time.perf_counter()
                     run_time = end_time - start_time
                     match_time = end_time - check_time
-                    print(f'[Runtime: {run_time}] Finished doing another set of 100 in {match_time} seconds')
+                    print(f'[({current_frame}/{frame_count}) Runtime: {run_time:0.4f}] ({str(round(finished_minutes, 2))}:{str(round(finished_seconds, 2))}/{str(round(duration_minutes, 2))}:{str(round(duration_seconds, 2))})')
 
                 current_frame += 1
             else:
