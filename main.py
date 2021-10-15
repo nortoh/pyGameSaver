@@ -2,33 +2,46 @@ import ffmpeg
 import logging
 import sys, getopt
 import cv2
+import time
 import numpy as np
 
 class Main(object):
 
     def __init__(self):
         print("template_matcher (nortoh) v1.0")
-        self.execute()
-
-    def execute(self):
-        self.video = 'video.mp4'
-        self.template_image_file = 'template.png'
+        self.video = 'movie.mp4'
+        self.template_image_file = 'template2.png'
         self.template = cv2.imread(self.template_image_file)
 
+    def execute(self):
         cam = cv2.VideoCapture(self.video)
+
+        start_time = time.perf_counter()
+
+        # FPS and frames
+        fps = cam.get(cv2.CAP_PROP_FPS)
+        frame_count = int(cam.get(cv2.CAP_PROP_FRAME_COUNT))
+        print(f'FPS: {fps} frame_count: {frame_count}')
         
         # Stick to a small section of frames for debugging
         current_frame = 0
-        max_frame = 10
-
-        while(current_frame < max_frame):
+        
+        while(current_frame < frame_count):
             ret, image = cam.read()
 
             if ret:
                 # We have a good frame
-                
+                check_time = time.perf_counter()
                 # Check frame
+                # print(f'Checking frame: {current_frame}')
                 self.check_frame(current_frame, image)
+                
+                if (current_frame % 100 == 1):
+                    end_time = time.perf_counter()
+                    run_time = end_time - start_time
+                    match_time = end_time - check_time
+                    print(f'[Runtime: {run_time}] Finished doing another set of 100 in {match_time} seconds')
+
                 current_frame += 1
             else:
                 # We have a bad frame
@@ -38,7 +51,6 @@ class Main(object):
         cv2.destroyAllWindows()
 
     def check_frame(self, current_frame, image):
-        
         # print(f'current_frame: {str(current_frame)} frame: {image}')
 
         # Copy imagee
@@ -50,9 +62,15 @@ class Main(object):
         # We want frames where we match at least 80% of the frame to the template
         threshold = 0.8
         loc = np.where(result >= threshold)
+        results = zip(*loc[::1])
 
+        # print(results, sep=',')
+        # if len(loc) != 0:
+        #     print(f"Found something on frame {current_frame}")
+        
+        
         for pt in zip(*loc[::1]):
             print(f'Found one in frame {current_frame} - {pt}')
 
 if __name__ == '__main__':
-    Main()
+    Main().execute()
