@@ -108,7 +108,10 @@ class Main(object):
 
             # Loop through all the video frames
             for index in range(found_frame - left_padding, found_frame):
+                output_video.write(self.image_frames[index])
                 print(f'[Index: {index}]')
+
+        output_video.release()
 
 if __name__ == '__main__':
     Main().execute()
